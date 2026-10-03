@@ -1,0 +1,97 @@
+request_activity:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+    activity_id:
+      required: true
+      selector:
+        text:
+    origin:
+      default: user
+      selector:
+        text:
+    guards:
+      advanced: true
+      selector:
+        object:
+          multiple: true
+finish:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+retry:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+set_device_setting:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+    equipment_id:
+      required: true
+      selector:
+        text:
+    capability_id:
+      required: true
+      selector:
+        text:
+    value:
+      required: true
+      selector:
+        object:
+cancel_requests:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+    origin:
+      required: true
+      selector:
+        text:
+apply_policy:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+    policy_id:
+      required: true
+      selector:
+        text:
+    origin:
+      default: policy
+      selector:
+        text:
+export_configuration:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+import_configuration:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: media_activities
+    configuration:
+      required: true
+      selector:
+        object:

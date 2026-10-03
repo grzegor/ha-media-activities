@@ -1,0 +1,6 @@
+FROM python:3.14-slim
+RUN python -m pip install --no-cache-dir \
+    homeassistant==2026.9.4 pytest==9.1.1 pytest-asyncio==1.4.0 pytest-cov==7.1.0 ruff==0.16.10
+WORKDIR /workspace
+ENV PYTHONPATH=/workspace
+CMD ["python", "-m", "pytest", "--cov", "--cov-report=term-missing"]

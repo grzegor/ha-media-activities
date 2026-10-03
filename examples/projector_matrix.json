@@ -1,0 +1,730 @@
+{
+  "version": 1,
+  "name": "Projector and HDMI Matrix",
+  "observer_only": true,
+  "preserve_devices": false,
+  "equipment": [
+    {
+      "id": "projector",
+      "name": "Projector",
+      "role": "display",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.turn_on",
+              "target": {
+                "entity_id": "media_player.projector"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            },
+            {
+              "action": "media_player.turn_off",
+              "target": {
+                "entity_id": "media_player.projector"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 600,
+          "observation": {
+            "entity_id": "media_player.projector",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "cleanup": {
+            "value": false
+          }
+        },
+        {
+          "id": "power_state",
+          "kind": "availability",
+          "value_type": "string",
+          "feedback_type": "reported",
+          "operations": [],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.projector"
+          }
+        },
+        {
+          "id": "picture_mode",
+          "kind": "setting",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "epson_projector_link.select_color_mode",
+              "target": {
+                "entity_id": "media_player.projector"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "color_mode"
+            }
+          ],
+          "timeout": 600,
+          "observation": {
+            "entity_id": "media_player.projector",
+            "attribute": "color_mode"
+          },
+          "allowed_values": [
+            "Cinema",
+            "Game"
+          ]
+        },
+        {
+          "id": "supply",
+          "kind": "supply",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "switch.turn_on",
+              "target": {
+                "entity_id": "switch.projector_socket"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "switch.projector_socket",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "supply_policy": "standby_on"
+        }
+      ]
+    },
+    {
+      "id": "receiver",
+      "name": "Receiver",
+      "role": "audio",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.turn_on",
+              "target": {
+                "entity_id": "media_player.receiver"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            },
+            {
+              "action": "media_player.turn_off",
+              "target": {
+                "entity_id": "media_player.receiver"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 120,
+          "observation": {
+            "entity_id": "media_player.receiver",
+            "value_map": {
+              "on": true,
+              "idle": true,
+              "playing": true,
+              "paused": true,
+              "buffering": true,
+              "off": false,
+              "standby": false
+            }
+          },
+          "cleanup": {
+            "value": false
+          }
+        },
+        {
+          "id": "input",
+          "kind": "input",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.select_source",
+              "target": {
+                "entity_id": "media_player.receiver"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "source"
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.receiver",
+            "attribute": "source",
+            "valid_when": [
+              {
+                "entity_id": "media_player.receiver",
+                "states": [
+                  "on",
+                  "idle",
+                  "playing",
+                  "paused",
+                  "buffering"
+                ]
+              }
+            ]
+          },
+          "allowed_values": [
+            "TV",
+            "HDMI",
+            "Bluetooth Audio"
+          ],
+          "prerequisites": [
+            {
+              "entity_id": "media_player.receiver",
+              "states": [
+                "on",
+                "idle",
+                "playing"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "supply",
+          "kind": "supply",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "switch.turn_on",
+              "target": {
+                "entity_id": "switch.receiver_socket"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "switch.receiver_socket",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "supply_policy": "standby_on"
+        },
+        {
+          "id": "playback",
+          "kind": "playback",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.media_stop",
+              "target": {
+                "entity_id": "media_player.receiver_music"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": "idle"
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.receiver_music"
+          },
+          "allowed_values": [
+            "idle"
+          ],
+          "cleanup": {
+            "value": "idle"
+          }
+        },
+        {
+          "id": "media",
+          "kind": "playback",
+          "value_type": "string",
+          "feedback_type": "command_only",
+          "operations": [
+            {
+              "action": "music_assistant.play_media",
+              "target": {
+                "entity_id": "media_player.receiver_music"
+              },
+              "data": {
+                "media_type": "radio"
+              },
+              "idempotent": false,
+              "any_value": true,
+              "value_field": "media_id"
+            }
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "streamer",
+      "name": "Streamer",
+      "role": "source",
+      "capabilities": [
+        {
+          "id": "state",
+          "kind": "setting",
+          "value_type": "string",
+          "feedback_type": "reported",
+          "operations": [],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.streamer"
+          }
+        },
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "command_only",
+          "operations": [
+            {
+              "action": "remote.send_command",
+              "target": {
+                "entity_id": "remote.streamer"
+              },
+              "data": {
+                "command": "wakeup"
+              },
+              "idempotent": true,
+              "value": true
+            },
+            {
+              "action": "remote.send_command",
+              "target": {
+                "entity_id": "remote.streamer"
+              },
+              "data": {
+                "command": "suspend"
+              },
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 120,
+          "cleanup": {
+            "value": false
+          }
+        },
+        {
+          "id": "supply",
+          "kind": "supply",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "switch.turn_on",
+              "target": {
+                "entity_id": "switch.streamer_socket"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "switch.streamer_socket",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "supply_policy": "always_on"
+        }
+      ]
+    },
+    {
+      "id": "matrix",
+      "name": "HDMI router",
+      "role": "router",
+      "capabilities": [
+        {
+          "id": "route_picture",
+          "kind": "route",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "select.select_option",
+              "target": {
+                "entity_id": "select.matrix_picture"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "option"
+            }
+          ],
+          "timeout": 90,
+          "observation": {
+            "entity_id": "select.matrix_picture"
+          },
+          "allowed_values": [
+            "0",
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "id": "route_sound",
+          "kind": "route",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "select.select_option",
+              "target": {
+                "entity_id": "select.matrix_sound"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "option"
+            }
+          ],
+          "timeout": 90,
+          "observation": {
+            "entity_id": "select.matrix_sound"
+          },
+          "allowed_values": [
+            "0",
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "id": "supply",
+          "kind": "supply",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "switch.turn_on",
+              "target": {
+                "entity_id": "switch.matrix_socket"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "switch.matrix_socket",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "supply_policy": "standby_on"
+        }
+      ]
+    },
+    {
+      "id": "console",
+      "name": "Console",
+      "role": "source",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.turn_on",
+              "target": {
+                "entity_id": "media_player.console"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            },
+            {
+              "action": "media_player.turn_off",
+              "target": {
+                "entity_id": "media_player.console"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 120,
+          "observation": {
+            "entity_id": "media_player.console",
+            "value_map": {
+              "on": true,
+              "idle": true,
+              "playing": true,
+              "paused": true,
+              "buffering": true,
+              "off": false,
+              "standby": false
+            }
+          },
+          "cleanup": {
+            "value": false
+          }
+        }
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "id": "streaming",
+      "name": "Watch streamer",
+      "requirements": [
+        {
+          "id": "projector_supply",
+          "equipment": "projector",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "receiver_supply",
+          "equipment": "receiver",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "matrix_supply",
+          "equipment": "matrix",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "source_on",
+          "equipment": "streamer",
+          "capability": "power",
+          "value": true,
+          "confirmation": "best_effort"
+        },
+        {
+          "id": "receiver_on",
+          "equipment": "receiver",
+          "capability": "power",
+          "value": true,
+          "depends_on": [
+            "receiver_supply"
+          ]
+        },
+        {
+          "id": "receiver_hdmi",
+          "equipment": "receiver",
+          "capability": "input",
+          "value": "HDMI",
+          "depends_on": [
+            "receiver_on"
+          ]
+        },
+        {
+          "id": "picture_route",
+          "equipment": "matrix",
+          "capability": "route_picture",
+          "value": "0",
+          "depends_on": [
+            "matrix_supply"
+          ]
+        },
+        {
+          "id": "sound_route",
+          "equipment": "matrix",
+          "capability": "route_sound",
+          "value": "0",
+          "depends_on": [
+            "matrix_supply"
+          ]
+        },
+        {
+          "id": "projector_on",
+          "equipment": "projector",
+          "capability": "power",
+          "value": true,
+          "depends_on": [
+            "projector_supply"
+          ]
+        },
+        {
+          "id": "picture_mode",
+          "equipment": "projector",
+          "capability": "picture_mode",
+          "value": "Cinema",
+          "depends_on": [
+            "projector_on"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gaming",
+      "name": "Play console",
+      "requirements": [
+        {
+          "id": "projector_supply",
+          "equipment": "projector",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "receiver_supply",
+          "equipment": "receiver",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "matrix_supply",
+          "equipment": "matrix",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "source_on",
+          "equipment": "console",
+          "capability": "power",
+          "value": true,
+          "confirmation": "required"
+        },
+        {
+          "id": "receiver_on",
+          "equipment": "receiver",
+          "capability": "power",
+          "value": true,
+          "depends_on": [
+            "receiver_supply"
+          ]
+        },
+        {
+          "id": "receiver_hdmi",
+          "equipment": "receiver",
+          "capability": "input",
+          "value": "HDMI",
+          "depends_on": [
+            "receiver_on"
+          ]
+        },
+        {
+          "id": "picture_route",
+          "equipment": "matrix",
+          "capability": "route_picture",
+          "value": "1",
+          "depends_on": [
+            "matrix_supply"
+          ]
+        },
+        {
+          "id": "sound_route",
+          "equipment": "matrix",
+          "capability": "route_sound",
+          "value": "1",
+          "depends_on": [
+            "matrix_supply"
+          ]
+        },
+        {
+          "id": "projector_on",
+          "equipment": "projector",
+          "capability": "power",
+          "value": true,
+          "depends_on": [
+            "projector_supply"
+          ]
+        },
+        {
+          "id": "picture_mode",
+          "equipment": "projector",
+          "capability": "picture_mode",
+          "value": "Game",
+          "depends_on": [
+            "projector_on"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio",
+      "name": "Listen to radio",
+      "requirements": [
+        {
+          "id": "receiver_supply",
+          "equipment": "receiver",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "receiver_on",
+          "equipment": "receiver",
+          "capability": "power",
+          "value": true,
+          "depends_on": [
+            "receiver_supply"
+          ]
+        },
+        {
+          "id": "radio",
+          "equipment": "receiver",
+          "capability": "media",
+          "value": "https://radio.example.org/live",
+          "depends_on": [
+            "receiver_on"
+          ],
+          "confirmation": "best_effort"
+        }
+      ]
+    }
+  ],
+  "detection_rules": [
+    {
+      "id": "streamer_route",
+      "activity": "streaming",
+      "conditions": [
+        {
+          "entity_id": "select.matrix_picture",
+          "state": "0"
+        }
+      ]
+    },
+    {
+      "id": "console_route",
+      "activity": "gaming",
+      "conditions": [
+        {
+          "entity_id": "select.matrix_picture",
+          "state": "1"
+        }
+      ]
+    }
+  ]
+}

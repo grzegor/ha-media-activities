@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "name": "Tv Only",
+  "observer_only": true,
+  "preserve_devices": false,
+  "equipment": [
+    {
+      "id": "tv",
+      "name": "Tv",
+      "role": "physical",
+      "capabilities": [
+        {
+          "id": "input",
+          "kind": "input",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.select_source",
+              "target": {
+                "entity_id": "media_player.television"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "source"
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.television",
+            "attribute": "source",
+            "valid_when": [
+              {
+                "entity_id": "media_player.television",
+                "states": [
+                  "on",
+                  "idle",
+                  "playing",
+                  "paused",
+                  "buffering"
+                ]
+              }
+            ]
+          },
+          "allowed_values": [
+            "Live TV",
+            "HDMI 1"
+          ]
+        }
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "id": "watch_tv",
+      "name": "Watch TV",
+      "requirements": [
+        {
+          "id": "input",
+          "equipment": "tv",
+          "capability": "input",
+          "value": "Live TV"
+        }
+      ]
+    }
+  ],
+  "detection_rules": [
+    {
+      "id": "live_tv",
+      "activity": "watch_tv",
+      "conditions": [
+        {
+          "entity_id": "media_player.television",
+          "attribute": "source",
+          "state": "Live TV"
+        }
+      ]
+    }
+  ]
+}

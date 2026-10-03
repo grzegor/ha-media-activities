@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "name": "Mixed Ir Network",
+  "observer_only": true,
+  "preserve_devices": false,
+  "equipment": [
+    {
+      "id": "projector",
+      "name": "Projector",
+      "role": "display",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.turn_on",
+              "target": {
+                "entity_id": "media_player.projector"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true,
+              "when": [
+                {
+                  "entity_id": "media_player.projector",
+                  "states": [
+                    "off",
+                    "on",
+                    "warmup",
+                    "cooldown"
+                  ]
+                }
+              ]
+            },
+            {
+              "value": true,
+              "action": "script.projector_ir_on",
+              "target": {},
+              "data": {},
+              "idempotent": true,
+              "transport": "ir",
+              "when": [
+                {
+                  "entity_id": "media_player.projector",
+                  "states": [
+                    "unknown",
+                    "unavailable"
+                  ]
+                }
+              ],
+              "min_delay": 3,
+              "resource_ids": [
+                "script.projector_ir_on"
+              ]
+            },
+            {
+              "action": "media_player.turn_off",
+              "target": {
+                "entity_id": "media_player.projector"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 600,
+          "observation": {
+            "entity_id": "media_player.projector",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "cleanup": {
+            "value": false
+          }
+        },
+        {
+          "id": "power_state",
+          "kind": "availability",
+          "value_type": "string",
+          "feedback_type": "reported",
+          "operations": [],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.projector"
+          }
+        },
+        {
+          "id": "picture_mode",
+          "kind": "setting",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "epson_projector_link.select_color_mode",
+              "target": {
+                "entity_id": "media_player.projector"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "color_mode"
+            }
+          ],
+          "timeout": 600,
+          "observation": {
+            "entity_id": "media_player.projector",
+            "attribute": "color_mode"
+          },
+          "allowed_values": [
+            "Cinema",
+            "Game"
+          ]
+        },
+        {
+          "id": "supply",
+          "kind": "supply",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "switch.turn_on",
+              "target": {
+                "entity_id": "switch.projector_socket"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "switch.projector_socket",
+            "value_map": {
+              "on": true,
+              "off": false
+            }
+          },
+          "supply_policy": "standby_on"
+        }
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "id": "cinema",
+      "name": "Cinema",
+      "requirements": [
+        {
+          "id": "supply_on",
+          "equipment": "projector",
+          "capability": "supply",
+          "value": true
+        },
+        {
+          "id": "projector_on",
+          "equipment": "projector",
+          "capability": "power",
+          "value": true,
+          "depends_on": [
+            "supply_on"
+          ],
+          "min_delay": 3
+        },
+        {
+          "id": "cinema_mode",
+          "equipment": "projector",
+          "capability": "picture_mode",
+          "value": "Cinema",
+          "depends_on": [
+            "projector_on"
+          ]
+        }
+      ]
+    }
+  ]
+}

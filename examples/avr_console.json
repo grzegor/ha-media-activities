@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "name": "Avr Console",
+  "observer_only": true,
+  "preserve_devices": false,
+  "equipment": [
+    {
+      "id": "tv",
+      "name": "Tv",
+      "role": "physical",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.turn_on",
+              "target": {
+                "entity_id": "media_player.television"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            },
+            {
+              "action": "media_player.turn_off",
+              "target": {
+                "entity_id": "media_player.television"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 120,
+          "observation": {
+            "entity_id": "media_player.television",
+            "value_map": {
+              "on": true,
+              "idle": true,
+              "playing": true,
+              "paused": true,
+              "buffering": true,
+              "off": false,
+              "standby": false
+            }
+          },
+          "cleanup": {
+            "value": false
+          }
+        },
+        {
+          "id": "input",
+          "kind": "input",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.select_source",
+              "target": {
+                "entity_id": "media_player.television"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "source"
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.television",
+            "attribute": "source",
+            "valid_when": [
+              {
+                "entity_id": "media_player.television",
+                "states": [
+                  "on",
+                  "idle",
+                  "playing",
+                  "paused",
+                  "buffering"
+                ]
+              }
+            ]
+          },
+          "allowed_values": [
+            "HDMI 2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receiver",
+      "name": "Receiver",
+      "role": "audio",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.turn_on",
+              "target": {
+                "entity_id": "media_player.receiver"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": true
+            },
+            {
+              "action": "media_player.turn_off",
+              "target": {
+                "entity_id": "media_player.receiver"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": false
+            }
+          ],
+          "timeout": 120,
+          "observation": {
+            "entity_id": "media_player.receiver",
+            "value_map": {
+              "on": true,
+              "idle": true,
+              "playing": true,
+              "paused": true,
+              "buffering": true,
+              "off": false,
+              "standby": false
+            }
+          },
+          "cleanup": {
+            "value": false
+          }
+        },
+        {
+          "id": "input",
+          "kind": "input",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.select_source",
+              "target": {
+                "entity_id": "media_player.receiver"
+              },
+              "data": {},
+              "idempotent": true,
+              "any_value": true,
+              "value_field": "source"
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.receiver",
+            "attribute": "source",
+            "valid_when": [
+              {
+                "entity_id": "media_player.receiver",
+                "states": [
+                  "on",
+                  "idle",
+                  "playing",
+                  "paused",
+                  "buffering"
+                ]
+              }
+            ]
+          },
+          "allowed_values": [
+            "Game",
+            "Music"
+          ],
+          "prerequisites": [
+            {
+              "entity_id": "media_player.receiver",
+              "states": [
+                "on",
+                "idle",
+                "playing"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "console",
+      "name": "Console",
+      "role": "accessory",
+      "capabilities": [
+        {
+          "id": "press",
+          "kind": "setting",
+          "value_type": "enum",
+          "feedback_type": "command_only",
+          "operations": [
+            {
+              "action": "button.press",
+              "target": {
+                "entity_id": "button.console_wake"
+              },
+              "data": {},
+              "idempotent": false,
+              "value": "press"
+            }
+          ],
+          "timeout": 30,
+          "allowed_values": [
+            "press"
+          ]
+        }
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "id": "play_console",
+      "name": "Play console",
+      "requirements": [
+        {
+          "id": "tv_on",
+          "equipment": "tv",
+          "capability": "power",
+          "value": true
+        },
+        {
+          "id": "receiver_on",
+          "equipment": "receiver",
+          "capability": "power",
+          "value": true
+        },
+        {
+          "id": "tv_input",
+          "equipment": "tv",
+          "capability": "input",
+          "value": "HDMI 2",
+          "depends_on": [
+            "tv_on"
+          ]
+        },
+        {
+          "id": "receiver_input",
+          "equipment": "receiver",
+          "capability": "input",
+          "value": "Game",
+          "depends_on": [
+            "receiver_on"
+          ]
+        },
+        {
+          "id": "console_wake",
+          "equipment": "console",
+          "capability": "press",
+          "value": "press",
+          "confirmation": "best_effort"
+        }
+      ]
+    }
+  ]
+}

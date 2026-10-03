@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "name": "Ir Only",
+  "observer_only": true,
+  "preserve_devices": false,
+  "equipment": [
+    {
+      "id": "tv",
+      "name": "IR television",
+      "role": "display",
+      "capabilities": [
+        {
+          "id": "power",
+          "kind": "power",
+          "value_type": "boolean",
+          "feedback_type": "command_only",
+          "operations": [
+            {
+              "value": true,
+              "action": "script.tv_ir_on",
+              "target": {},
+              "data": {},
+              "idempotent": true,
+              "resource_ids": [
+                "script.tv_ir_on"
+              ]
+            },
+            {
+              "value": false,
+              "action": "script.tv_ir_off",
+              "target": {},
+              "data": {},
+              "idempotent": true,
+              "resource_ids": [
+                "script.tv_ir_off"
+              ]
+            }
+          ],
+          "cleanup": {
+            "value": false
+          },
+          "timeout": 30
+        }
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "id": "watch_tv",
+      "name": "Watch TV",
+      "requirements": [
+        {
+          "id": "tv_on",
+          "equipment": "tv",
+          "capability": "power",
+          "value": true,
+          "confirmation": "best_effort"
+        }
+      ]
+    }
+  ]
+}

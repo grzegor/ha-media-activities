@@ -1,0 +1,345 @@
+{
+  "title": "Media Activities",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Create a media system",
+        "description": "Give this independently controlled installation a name. Start with existing media players, or import an advanced configuration.",
+        "data": {
+          "name": "System name",
+          "area_id": "Area",
+          "advanced": "Import advanced configuration"
+        }
+      },
+      "equipment": {
+        "title": "Choose equipment",
+        "description": "Select the physical TV, receiver, speaker or source entities for this system. No outlet or HDMI switch is required. Review generated power feedback before enabling control; Cast and playback-session entities may need advanced bindings.",
+        "data": {
+          "entities": "Media players"
+        }
+      },
+      "activity": {
+        "title": "Add an activity",
+        "description": "Name the activity and choose the required inputs. Supported power-on requirements are added automatically. Leave an input empty to leave it unchanged. Advanced settings are editable after setup.",
+        "data": {
+          "name": "Activity name",
+          "add_another": "Add another activity"
+        }
+      },
+      "advanced": {
+        "title": "Import configuration",
+        "description": "Paste the versioned configuration object. Importing never controls equipment; observer-only mode is enforced.",
+        "data": {
+          "configuration": "Configuration"
+        }
+      },
+      "review": {
+        "title": "Review {name}",
+        "description": "Equipment: {equipment}\n\nActivities: {activities}\n\nThe system starts in observer-only mode. No device commands will be sent until you explicitly turn that mode off."
+      },
+      "reconfigure": {
+        "title": "Reconfigure system",
+        "description": "Edit the full configuration, or use equipment/activity subentries for individual edits. Saving returns the system to observer-only mode. Stable item IDs preserve references.",
+        "data": {
+          "configuration": "Configuration"
+        }
+      }
+    },
+    "error": {
+      "invalid_configuration": "The configuration is invalid. Check capability references, supported values and dependencies.",
+      "controlled_resource_conflict": "Another Media Activities system already controls one of these entities.",
+      "entity_missing": "The selected entity no longer exists. Choose its current entity ID.",
+      "no_supported_requirements": "No supported activity requirement was selected. Choose an input or use advanced configuration."
+    },
+    "abort": {
+      "reconfigure_successful": "Configuration updated. Review the system in observer-only mode before enabling control.",
+      "entry_removed": "This system has been removed.",
+      "reconfigure": "Continue in the configuration editor."
+    }
+  },
+  "config_subentries": {
+    "equipment": {
+      "step": {
+        "user": {
+          "title": "Add equipment",
+          "description": "Use the available native controls or choose advanced bindings. Existing item IDs remain stable.",
+          "data": {
+            "entity_id": "Entity",
+            "name": "Equipment name",
+            "advanced": "Use advanced configuration"
+          }
+        },
+        "advanced": {
+          "title": "Advanced equipment",
+          "description": "Configure this item as a versioned system fragment. References are validated against the complete system.",
+          "data": {
+            "configuration": "Equipment definition"
+          }
+        },
+        "reconfigure": {
+          "title": "Edit equipment",
+          "description": "Keep the item ID unchanged. Update bindings, settings and requirements here.",
+          "data": {
+            "configuration": "Equipment definition"
+          }
+        }
+      },
+      "error": {
+        "invalid_configuration": "The configuration is invalid. Check capability references, supported values and dependencies.",
+        "controlled_resource_conflict": "Another Media Activities system already controls one of these entities.",
+        "entity_missing": "The selected entity no longer exists. Choose its current entity ID.",
+        "no_supported_requirements": "No supported activity requirement was selected. Choose an input or use advanced configuration."
+      },
+      "abort": {
+        "reconfigure_successful": "Configuration updated. Review the system in observer-only mode before enabling control.",
+        "entry_removed": "This system has been removed.",
+        "reconfigure": "Continue in the configuration editor."
+      },
+      "entry_type": "Equipment",
+      "initiate_flow": {
+        "user": "Add equipment",
+        "reconfigure": "Edit equipment"
+      }
+    },
+    "activity": {
+      "step": {
+        "user": {
+          "title": "Add activity",
+          "description": "Use the available native controls or choose advanced bindings. Existing item IDs remain stable.",
+          "data": {
+            "entity_id": "Entity",
+            "name": "Activity name",
+            "advanced": "Use advanced configuration"
+          }
+        },
+        "advanced": {
+          "title": "Advanced activity",
+          "description": "Configure this item as a versioned system fragment. References are validated against the complete system.",
+          "data": {
+            "configuration": "Activity definition"
+          }
+        },
+        "reconfigure": {
+          "title": "Edit activity",
+          "description": "Keep the item ID unchanged. Update bindings, settings and requirements here.",
+          "data": {
+            "configuration": "Activity definition"
+          }
+        }
+      },
+      "error": {
+        "invalid_configuration": "The configuration is invalid. Check capability references, supported values and dependencies.",
+        "controlled_resource_conflict": "Another Media Activities system already controls one of these entities.",
+        "entity_missing": "The selected entity no longer exists. Choose its current entity ID.",
+        "no_supported_requirements": "No supported activity requirement was selected. Choose an input or use advanced configuration."
+      },
+      "abort": {
+        "reconfigure_successful": "Configuration updated. Review the system in observer-only mode before enabling control.",
+        "entry_removed": "This system has been removed.",
+        "reconfigure": "Continue in the configuration editor."
+      },
+      "entry_type": "Activity",
+      "initiate_flow": {
+        "user": "Add activity",
+        "reconfigure": "Edit activity"
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "activity": {
+        "name": "Activity"
+      }
+    },
+    "switch": {
+      "preserve_devices": {
+        "name": "Don’t turn off devices"
+      },
+      "observer_only": {
+        "name": "Observer only"
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "observing": "Observing",
+          "preparing": "Preparing",
+          "ready": "Ready",
+          "applied_unverified": "Applied, unverified",
+          "recovering": "Recovering",
+          "finishing": "Finishing",
+          "blocked": "Blocked",
+          "recovery_paused": "Recovery paused after restart"
+        }
+      },
+      "observed_activity": {
+        "name": "Observed activity"
+      },
+      "cleanup_status": {
+        "name": "Cleanup status",
+        "state": {
+          "not_needed": "Not needed",
+          "preserved": "Devices preserved",
+          "pending": "Pending",
+          "complete": "Complete",
+          "blocked": "Blocked"
+        }
+      }
+    },
+    "binary_sensor": {
+      "verified_ready": {
+        "name": "Verified ready"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
+    "button": {
+      "retry": {
+        "name": "Retry"
+      },
+      "finish": {
+        "name": "Finish media"
+      }
+    }
+  },
+  "services": {
+    "request_activity": {
+      "name": "Request activity",
+      "description": "Prepare the activity and return immediately with a request ID.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "activity_id": {
+          "name": "Activity ID"
+        },
+        "guards": {
+          "name": "Conditions required before device commands"
+        },
+        "origin": {
+          "name": "Request origin"
+        }
+      }
+    },
+    "finish": {
+      "name": "Finish media",
+      "description": "Finish managed equipment safely and reset preservation atomically.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        }
+      }
+    },
+    "retry": {
+      "name": "Retry",
+      "description": "Run one bounded reconciliation of the current activity.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        }
+      }
+    },
+    "set_device_setting": {
+      "name": "Set device setting",
+      "description": "Apply a session override through the equipment command lane.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "equipment_id": {
+          "name": "Equipment ID"
+        },
+        "capability_id": {
+          "name": "Capability ID"
+        },
+        "value": {
+          "name": "Typed desired value"
+        }
+      }
+    },
+    "cancel_requests": {
+      "name": "Cancel requests",
+      "description": "Invalidate pending requests for the specified origin.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "origin": {
+          "name": "Request origin"
+        }
+      }
+    },
+    "apply_policy": {
+      "name": "Apply policy",
+      "description": "Apply a configured equipment policy while rechecking its guards.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "origin": {
+          "name": "Request origin"
+        },
+        "policy_id": {
+          "name": "Policy ID"
+        }
+      }
+    },
+    "export_configuration": {
+      "name": "Export configuration",
+      "description": "Return the versioned configuration. It may contain private entity IDs and action payloads.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        }
+      }
+    },
+    "import_configuration": {
+      "name": "Import configuration",
+      "description": "Validate and replace configuration without actuating equipment.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "configuration": {
+          "name": "Configuration"
+        }
+      }
+    }
+  },
+  "issues": {
+    "entity_missing": {
+      "title": "Configured media entity is missing",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Open configuration",
+            "description": "System: {system}\n\n{detail}\n\nOpen reconfiguration and correct the bindings. Device commands remain subject to safety guards.\n\nContinue to the Media Activities configuration editor. No device commands are sent."
+          }
+        },
+        "abort": {
+          "reconfigure_successful": "Configuration updated. Review the system in observer-only mode before enabling control.",
+          "entry_removed": "This system has been removed.",
+          "reconfigure": "Continue in the configuration editor."
+        }
+      }
+    },
+    "invalid_configuration": {
+      "title": "Media configuration needs attention",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Open configuration",
+            "description": "System: {system}\n\n{detail}\n\nOpen reconfiguration and correct the bindings. Device commands remain subject to safety guards.\n\nContinue to the Media Activities configuration editor. No device commands are sent."
+          }
+        },
+        "abort": {
+          "reconfigure_successful": "Configuration updated. Review the system in observer-only mode before enabling control.",
+          "entry_removed": "This system has been removed.",
+          "reconfigure": "Continue in the configuration editor."
+        }
+      }
+    }
+  }
+}

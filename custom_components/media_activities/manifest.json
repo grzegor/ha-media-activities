@@ -1,0 +1,15 @@
+{
+  "domain": "media_activities",
+  "name": "Media Activities",
+  "codeowners": [
+    "@grzegor"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/grzegor/ha-media-activities",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/grzegor/ha-media-activities/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

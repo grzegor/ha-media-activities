@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "name": "Audio Only",
+  "observer_only": true,
+  "preserve_devices": false,
+  "equipment": [
+    {
+      "id": "speaker",
+      "name": "Speaker",
+      "role": "playback",
+      "capabilities": [
+        {
+          "id": "playback",
+          "kind": "playback",
+          "value_type": "enum",
+          "feedback_type": "reported",
+          "operations": [
+            {
+              "action": "media_player.media_stop",
+              "target": {
+                "entity_id": "media_player.speaker_music"
+              },
+              "data": {},
+              "idempotent": true,
+              "value": "idle"
+            }
+          ],
+          "timeout": 30,
+          "observation": {
+            "entity_id": "media_player.speaker_music"
+          },
+          "allowed_values": [
+            "idle"
+          ],
+          "cleanup": {
+            "value": "idle"
+          }
+        },
+        {
+          "id": "media",
+          "kind": "playback",
+          "value_type": "string",
+          "feedback_type": "command_only",
+          "operations": [
+            {
+              "action": "music_assistant.play_media",
+              "target": {
+                "entity_id": "media_player.speaker_music"
+              },
+              "data": {
+                "media_type": "radio"
+              },
+              "idempotent": false,
+              "any_value": true,
+              "value_field": "media_id"
+            }
+          ],
+          "timeout": 30
+        }
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "id": "radio",
+      "name": "Listen to radio",
+      "requirements": [
+        {
+          "id": "radio_start",
+          "equipment": "speaker",
+          "capability": "media",
+          "value": "https://radio.example.org/live",
+          "confirmation": "best_effort"
+        }
+      ]
+    }
+  ]
+}

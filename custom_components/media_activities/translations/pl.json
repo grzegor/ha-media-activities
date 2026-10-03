@@ -1,0 +1,345 @@
+{
+  "title": "Media Activities",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Utwórz system multimedialny",
+        "description": "Nadaj nazwę niezależnemu zestawowi urządzeń. Wybierz istniejące odtwarzacze lub importuj konfigurację zaawansowaną.",
+        "data": {
+          "name": "Nazwa systemu",
+          "area_id": "Pomieszczenie",
+          "advanced": "Importuj konfigurację zaawansowaną"
+        }
+      },
+      "equipment": {
+        "title": "Wybierz urządzenia",
+        "description": "Wybierz encje fizycznego telewizora, amplitunera, głośnika lub źródła. Gniazdko i przełącznik HDMI nie są wymagane. Encje Cast i sesji odtwarzania mogą wymagać zaawansowanej konfiguracji stanu zasilania.",
+        "data": {
+          "entities": "Odtwarzacze multimedialne"
+        }
+      },
+      "activity": {
+        "title": "Dodaj aktywność",
+        "description": "Nadaj nazwę i wybierz wejścia. Obsługiwane polecenia włączenia zostaną dodane automatycznie. Puste pole wejścia pozostawia je bez zmian.",
+        "data": {
+          "name": "Nazwa aktywności",
+          "add_another": "Dodaj kolejną aktywność"
+        }
+      },
+      "advanced": {
+        "title": "Importuj konfigurację",
+        "description": "Wklej obiekt konfiguracji z numerem wersji. Import nie steruje urządzeniami; system przejdzie w tryb obserwacji.",
+        "data": {
+          "configuration": "Konfiguracja"
+        }
+      },
+      "review": {
+        "title": "Sprawdź {name}",
+        "description": "Urządzenia: {equipment}\n\nAktywności: {activities}\n\nSystem rozpocznie pracę w trybie obserwacji. Polecenia nie będą wysyłane do czasu jego wyłączenia."
+      },
+      "reconfigure": {
+        "title": "Zmień konfigurację systemu",
+        "description": "Zmień pełną konfigurację albo edytuj poszczególne urządzenia i aktywności. Zapis włącza tryb obserwacji. Nie zmieniaj stałych identyfikatorów.",
+        "data": {
+          "configuration": "Konfiguracja"
+        }
+      }
+    },
+    "error": {
+      "invalid_configuration": "Konfiguracja jest nieprawidłowa. Sprawdź odwołania, obsługiwane wartości i zależności.",
+      "controlled_resource_conflict": "Inny system Media Activities już steruje jednym z wybranych urządzeń.",
+      "entity_missing": "Wybrana encja już nie istnieje. Wybierz jej aktualny identyfikator.",
+      "no_supported_requirements": "Nie wybrano obsługiwanego wymagania. Wybierz wejście lub konfigurację zaawansowaną."
+    },
+    "abort": {
+      "reconfigure_successful": "Konfiguracja została zapisana. Sprawdź system w trybie obserwacji przed włączeniem sterowania.",
+      "entry_removed": "Ten system został usunięty.",
+      "reconfigure": "Kontynuuj w edytorze konfiguracji."
+    }
+  },
+  "config_subentries": {
+    "equipment": {
+      "step": {
+        "user": {
+          "title": "Dodaj urządzenie",
+          "description": "Użyj standardowych pól lub wybierz konfigurację zaawansowaną.",
+          "data": {
+            "entity_id": "Encja",
+            "name": "Nazwa",
+            "advanced": "Konfiguracja zaawansowana"
+          }
+        },
+        "advanced": {
+          "title": "Konfiguracja zaawansowana",
+          "description": "Podaj definicję elementu. Odwołania są sprawdzane w obrębie całego systemu.",
+          "data": {
+            "configuration": "Definicja"
+          }
+        },
+        "reconfigure": {
+          "title": "Edytuj urządzenie",
+          "description": "Zachowaj identyfikator elementu. Zmień encje, ustawienia i wymagania.",
+          "data": {
+            "configuration": "Definicja"
+          }
+        }
+      },
+      "error": {
+        "invalid_configuration": "Konfiguracja jest nieprawidłowa. Sprawdź odwołania, obsługiwane wartości i zależności.",
+        "controlled_resource_conflict": "Inny system Media Activities już steruje jednym z wybranych urządzeń.",
+        "entity_missing": "Wybrana encja już nie istnieje. Wybierz jej aktualny identyfikator.",
+        "no_supported_requirements": "Nie wybrano obsługiwanego wymagania. Wybierz wejście lub konfigurację zaawansowaną."
+      },
+      "abort": {
+        "reconfigure_successful": "Konfiguracja została zapisana. Sprawdź system w trybie obserwacji przed włączeniem sterowania.",
+        "entry_removed": "Ten system został usunięty.",
+        "reconfigure": "Kontynuuj w edytorze konfiguracji."
+      },
+      "entry_type": "Urządzenie",
+      "initiate_flow": {
+        "user": "Dodaj urządzenie",
+        "reconfigure": "Edytuj urządzenie"
+      }
+    },
+    "activity": {
+      "step": {
+        "user": {
+          "title": "Dodaj aktywność",
+          "description": "Użyj standardowych pól lub wybierz konfigurację zaawansowaną.",
+          "data": {
+            "entity_id": "Encja",
+            "name": "Nazwa",
+            "advanced": "Konfiguracja zaawansowana"
+          }
+        },
+        "advanced": {
+          "title": "Konfiguracja zaawansowana",
+          "description": "Podaj definicję elementu. Odwołania są sprawdzane w obrębie całego systemu.",
+          "data": {
+            "configuration": "Definicja"
+          }
+        },
+        "reconfigure": {
+          "title": "Edytuj aktywność",
+          "description": "Zachowaj identyfikator elementu. Zmień encje, ustawienia i wymagania.",
+          "data": {
+            "configuration": "Definicja"
+          }
+        }
+      },
+      "error": {
+        "invalid_configuration": "Konfiguracja jest nieprawidłowa. Sprawdź odwołania, obsługiwane wartości i zależności.",
+        "controlled_resource_conflict": "Inny system Media Activities już steruje jednym z wybranych urządzeń.",
+        "entity_missing": "Wybrana encja już nie istnieje. Wybierz jej aktualny identyfikator.",
+        "no_supported_requirements": "Nie wybrano obsługiwanego wymagania. Wybierz wejście lub konfigurację zaawansowaną."
+      },
+      "abort": {
+        "reconfigure_successful": "Konfiguracja została zapisana. Sprawdź system w trybie obserwacji przed włączeniem sterowania.",
+        "entry_removed": "Ten system został usunięty.",
+        "reconfigure": "Kontynuuj w edytorze konfiguracji."
+      },
+      "entry_type": "Aktywność",
+      "initiate_flow": {
+        "user": "Dodaj aktywność",
+        "reconfigure": "Edytuj aktywność"
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "activity": {
+        "name": "Aktywność"
+      }
+    },
+    "switch": {
+      "preserve_devices": {
+        "name": "Nie wyłączaj urządzeń"
+      },
+      "observer_only": {
+        "name": "Tylko obserwacja"
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Stan",
+        "state": {
+          "observing": "Obserwacja",
+          "preparing": "Przygotowywanie",
+          "ready": "Gotowe",
+          "applied_unverified": "Zastosowane, niepotwierdzone",
+          "recovering": "Przywracanie",
+          "finishing": "Kończenie",
+          "blocked": "Zablokowane",
+          "recovery_paused": "Przywracanie wstrzymane po restarcie"
+        }
+      },
+      "observed_activity": {
+        "name": "Wykryta aktywność"
+      },
+      "cleanup_status": {
+        "name": "Wyłączanie nieużywanych urządzeń",
+        "state": {
+          "not_needed": "Niewymagane",
+          "preserved": "Pozostawione włączone",
+          "pending": "Oczekuje",
+          "complete": "Zakończone",
+          "blocked": "Zablokowane"
+        }
+      }
+    },
+    "binary_sensor": {
+      "verified_ready": {
+        "name": "Potwierdzona gotowość"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
+    "button": {
+      "retry": {
+        "name": "Ponów"
+      },
+      "finish": {
+        "name": "Zakończ multimedia"
+      }
+    }
+  },
+  "services": {
+    "request_activity": {
+      "name": "Wybierz aktywność",
+      "description": "Rozpocznij przygotowanie i zwróć identyfikator żądania.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "activity_id": {
+          "name": "ID aktywności"
+        },
+        "guards": {
+          "name": "Warunki wymagane przed wysłaniem poleceń"
+        },
+        "origin": {
+          "name": "Pochodzenie żądania"
+        }
+      }
+    },
+    "finish": {
+      "name": "Zakończ multimedia",
+      "description": "Bezpiecznie zakończ pracę urządzeń i wyłącz zachowywanie ich stanu.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        }
+      }
+    },
+    "retry": {
+      "name": "Ponów",
+      "description": "Wykonaj ograniczoną próbę uzgodnienia bieżącej aktywności.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        }
+      }
+    },
+    "set_device_setting": {
+      "name": "Ustaw urządzenie",
+      "description": "Zastosuj ustawienie sesji przez kolejkę poleceń urządzenia.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "equipment_id": {
+          "name": "ID urządzenia"
+        },
+        "capability_id": {
+          "name": "ID funkcji"
+        },
+        "value": {
+          "name": "Wartość docelowa"
+        }
+      }
+    },
+    "cancel_requests": {
+      "name": "Anuluj żądania",
+      "description": "Unieważnij oczekujące żądania o podanym pochodzeniu.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "origin": {
+          "name": "Pochodzenie żądania"
+        }
+      }
+    },
+    "apply_policy": {
+      "name": "Zastosuj profil",
+      "description": "Zastosuj profil urządzeń, ponownie sprawdzając warunki bezpieczeństwa.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "origin": {
+          "name": "Pochodzenie żądania"
+        },
+        "policy_id": {
+          "name": "ID profilu"
+        }
+      }
+    },
+    "export_configuration": {
+      "name": "Eksportuj konfigurację",
+      "description": "Zwróć konfigurację z numerem wersji. Może zawierać prywatne identyfikatory i dane poleceń.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        }
+      }
+    },
+    "import_configuration": {
+      "name": "Importuj konfigurację",
+      "description": "Sprawdź i zastąp konfigurację bez sterowania urządzeniami.",
+      "fields": {
+        "config_entry_id": {
+          "name": "System"
+        },
+        "configuration": {
+          "name": "Konfiguracja"
+        }
+      }
+    }
+  },
+  "issues": {
+    "entity_missing": {
+      "title": "Brak skonfigurowanej encji multimedialnej",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Otwórz konfigurację",
+            "description": "System: {system}\n\n{detail}\n\nOtwórz konfigurację i popraw odwołania do encji.\n\nPrzejdź do edytora Media Activities. Nie zostaną wysłane żadne polecenia."
+          }
+        },
+        "abort": {
+          "reconfigure_successful": "Konfiguracja została zapisana. Sprawdź system w trybie obserwacji przed włączeniem sterowania.",
+          "entry_removed": "Ten system został usunięty.",
+          "reconfigure": "Kontynuuj w edytorze konfiguracji."
+        }
+      }
+    },
+    "invalid_configuration": {
+      "title": "Konfiguracja multimediów wymaga poprawy",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Otwórz konfigurację",
+            "description": "System: {system}\n\n{detail}\n\nOtwórz konfigurację i popraw odwołania do encji.\n\nPrzejdź do edytora Media Activities. Nie zostaną wysłane żadne polecenia."
+          }
+        },
+        "abort": {
+          "reconfigure_successful": "Konfiguracja została zapisana. Sprawdź system w trybie obserwacji przed włączeniem sterowania.",
+          "entry_removed": "Ten system został usunięty.",
+          "reconfigure": "Kontynuuj w edytorze konfiguracji."
+        }
+      }
+    }
+  }
+}

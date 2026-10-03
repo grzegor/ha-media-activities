@@ -1,0 +1,29 @@
+name: Validate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build Linux test runtime
+        run: docker build -f Dockerfile.test -t media-activities-test .
+      - name: Unit and Home Assistant lifecycle tests
+        run: docker run --rm --network none -v "$PWD:/workspace" media-activities-test python -m pytest --cov --cov-branch --cov-fail-under=95
+      - name: Static checks
+        run: docker run --rm --network none -v "$PWD:/workspace" media-activities-test python -m ruff check .
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: home-assistant/actions/hassfest@master
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
