@@ -170,7 +170,8 @@
           "recovering": "Przywracanie",
           "finishing": "Kończenie",
           "blocked": "Zablokowane",
-          "recovery_paused": "Przywracanie wstrzymane po restarcie"
+          "recovery_paused": "Przywracanie wstrzymane po restarcie",
+          "handover": "Przerwa między aktywnościami"
         }
       },
       "observed_activity": {

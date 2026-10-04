@@ -32,5 +32,6 @@ class StatusSensor(MediaActivitiesEntity, SensorEntity):
         if self.key == "status":
             attributes.update({key: self.snapshot.get(key) for key in (
                 "activity_id", "mode", "policy_id", "suspended", "policy_ready",
+                "handover_until", "ended_activity",
             )})
         return attributes

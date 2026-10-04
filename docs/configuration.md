@@ -145,3 +145,26 @@ During debounce the coordinator waits before enforcing the previous activity. It
 Examples are structural templates, not assurances that an arbitrary device implements those actions. For example, the console in the projector example deliberately requires a functioning console integration; a smart socket alone cannot implement it.
 
 Export configuration before editing. Both export and import actions require an administrator. Import validates the configuration and returns the system to observer mode without actuating equipment.
+
+## Source shutdown and handover
+
+Activities may declare positive `end_conditions`, optional `end_guards`, `end_debounce` (default two seconds), and `handover_timeout` (default 180 seconds). All end conditions must match by default; `end_condition_mode: "any"` accepts any fresh known matching condition. Unknown alternatives never count as matched. Bind these to suitable source feedback, not merely to an outlet that remains On while the source sleeps:
+
+```json
+{
+  "id": "play_console",
+  "name": "Play console",
+  "requirements": [],
+  "end_conditions": [{"entity_id": "media_player.console", "states": ["off", "standby"]}],
+  "end_debounce": 2,
+  "handover_timeout": 180
+}
+```
+
+Replace the empty requirements with your equipment requirements. A source session must first have fresh known observations that do not match the end conditions. Initial cached Off and unknown/unavailable do not end a session. After confirmed source end, requested and observed activity become Idle, Status shows Waiting for next activity, and `handover_until` identifies the cleanup deadline. Old enforcement and unsent work stop immediately; already-submitted device commands remain tracked. No shutdown is sent during the handover window.
+
+Selecting or detecting the next activity cancels the window and prepares it without first cooling a still-running display. Otherwise, one bounded cleanup pass follows expiry. Automatic Idle preserves the Don't turn off devices switch; On prevents cleanup. Explicit Finish bypasses the window and resets preservation Off. A restart during the window pauses recovery and never replays a saved timer to shut equipment down.
+
+A new detected wake of a blocked current activity may restart recovery of blocked requirements in normal mode, preserving successful one-shot playback and the rolling recovery budget. Unchanged reports do not restart recovery.
+
+Predicates may also specify `stable_for` in seconds. This requires a fresh observation that has stayed unchanged for that duration. For a device that briefly reports standby before accepting wake, use a stable Off condition for the On operation, and configure spaced, finite retries. This reduces transition races; it cannot guarantee that a device will never reject a command. A reported state timestamp is not proof of a physical read, and unknown/optimistic state cannot authorize a protected mains cut.

@@ -39,3 +39,7 @@ For a device lacking suitable shutdown feedback, omit destructive supply removal
 5. Resume in observer mode and verify current device state before enabling actuation.
 
 Do not edit HA's `.storage` files while HA is running. Remove the integration through its native UI before uninstalling its files. Retired household automations should be re-enabled only deliberately; running two coordinators against the same equipment recreates conflicting control.
+
+## Device rejects a wake during shutdown
+
+A device can report standby before it accepts another power command. Use a `stable_for` readiness predicate and retry-safe discrete On commands with finite backoff. Verify the source has actually ended; stale requested activity must not keep waking a display after source shutdown. Vendor generic error responses may not identify a physical cause. Preserve the failed command timeline rather than treating successful submission or later retry as proof of the original cause.

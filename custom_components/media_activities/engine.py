@@ -69,6 +69,10 @@ class Engine:
         self._detection_affected: set[str] = set()
         self._last_observed_candidate: str | None = None
         self._last_event_key: tuple | None = None
+        self._end_armed = False
+        self._end_due: float | None = None
+        self.handover_until: float | None = None
+        self.ended_activity: str | None = None
         if persisted:
             self._restore(persisted)
         self._event("engine_started", observer_only=self.observer_only, restart_paused=self.restart_paused)
@@ -95,10 +99,10 @@ class Engine:
         self.request_guards = deepcopy(saved.get("request_guards", []))
         self.policy_id = saved.get("policy_id") if saved.get("policy_id") in self.policies else None
         self.mode = saved.get("mode", "activity" if self.activity_id != "idle" else "none")
-        if self.mode not in {"activity", "finish", "policy", "none"}:
+        if self.mode not in {"activity", "finish", "policy", "none", "handover", "automatic_idle"}:
             self.mode = "none"
         self.suspended = bool(saved.get("suspended", False))
-        if self.activity_id != "idle" or self.mode in {"finish", "policy"}:
+        if self.activity_id != "idle" or self.mode in {"finish", "policy", "handover", "automatic_idle"}:
             self.restart_paused = True
             self.phase = "recovery_paused"
             self._build_goals()
@@ -115,6 +119,10 @@ class Engine:
         self.restart_paused = False
         self._detection_due = None
         self._detection_affected.clear()
+        self._end_armed = False
+        self._end_due = None
+        self.handover_until = None
+        self.ended_activity = None
         # Unsubmitted reservations are cancellable. Submitted device work is not.
         for cid, command in list(self.commands.items()):
             if command["submitted_at"] is None:
@@ -158,6 +166,13 @@ class Engine:
         return rid
 
     def retry(self, now: float) -> str:
+        if self.mode in {"handover", "automatic_idle"}:
+            self.now = float(now)
+            self.mode = "automatic_idle"
+            rid = self._new_request("retry")
+            self._build_goals()
+            self._refresh_status()
+            return rid
         self.now = float(now)
         self.suspended = self.mode == "policy"
         rid = self._new_request("retry")
@@ -306,7 +321,7 @@ class Engine:
         return command.get("adopted_generation", command["generation"]) == self.generation
 
     def _add_cleanup(self) -> None:
-        if self.mode not in {"activity", "finish"} or (self.preserve_devices and self.mode != "finish"):
+        if self.mode not in {"activity", "finish", "automatic_idle"} or (self.preserve_devices and self.mode != "finish"):
             return
         required_equipment = {g["equipment"] for g in self.goals.values() if not g["cleanup"]}
         required_caps = {(g["equipment"], g["capability"]) for g in self.goals.values() if not g["cleanup"]}
@@ -429,6 +444,8 @@ class Engine:
         if not allow_unavailable and isinstance(value, str) and value.lower() in _UNKNOWN:
             return False
         if "max_age" in predicate and self.now - obs["at"] > predicate["max_age"]:
+            return False
+        if "stable_for" in predicate and (not obs["fresh"] or self.now - obs["changed_at"] < predicate["stable_for"]):
             return False
         if safety:
             if not obs["fresh"]:
@@ -713,6 +730,12 @@ class Engine:
             activity = next(iter(affected_matching))
             if activity != self.activity_id or self.ambiguous or self.restart_paused or self.suspended:
                 self.request(activity, self.now, origin="detected")
+            elif self.mode == "activity" and not self.preserve_devices:
+                # A new observed wake may retry blocked properties, but cannot
+                # reset the rolling recovery budget or replay successful playback.
+                for goal in self.goals.values():
+                    if not goal["cleanup"] and goal["status"] == "blocked":
+                        self._start_recovery(goal)
             self.observed_activity = activity
             self._last_observed_candidate = activity
 
@@ -734,6 +757,62 @@ class Engine:
             if cap["kind"] in {"power", "playback", "availability"} and value not in (False, "off", "idle", "paused"):
                 has_running_evidence = True
         return has_running_evidence
+
+    def _activity_end(self) -> None:
+        """End a positively observed source session without immediately cooling displays."""
+        if self.observer_only or self.restart_paused or self.suspended or self.guard_failed:
+            return
+        if self.mode == "handover":
+            self.observed_activity = "idle"
+            if self.handover_until is not None and self.now >= self.handover_until:
+                self.mode = "automatic_idle"
+                self.started = self.now
+                self.handover_until = None
+                self._build_goals()
+                self._event("handover_expired")
+            return
+        if self.mode == "automatic_idle":
+            self.observed_activity = "idle"
+            return
+        if self.mode != "activity":
+            return
+        activity = self.activities[self.activity_id]
+        conditions = activity["end_conditions"]
+        if not conditions or not self._predicates(activity["end_guards"]):
+            self._end_due = None
+            return
+        # A cached Off, initial startup, or unknown/unavailable source is not an
+        # observed end. Arm only after a fresh known non-ended session.
+        known = [bool((obs := self.observations.get(p["entity_id"])) and obs["fresh"]
+                    and _known(obs["state"]) and _known(self._raw(p["entity_id"], p.get("attribute"))[0])
+                    ) for p in conditions]
+        any_mode = activity["end_condition_mode"] == "any"
+        if not (any(known) if any_mode else all(known)):
+            self._end_due = None
+            return
+        matches = [valid and self._predicate(p) for valid, p in zip(known, conditions, strict=True)]
+        if not (any(matches) if any_mode else all(matches)):
+            self._end_armed = True
+            self._end_due = None
+            return
+        if not self._end_armed:
+            return
+        if self._end_due is None:
+            self._end_due = self.now + activity["end_debounce"]
+        if self.now < self._end_due:
+            return
+        ended = self.activity_id
+        self.activity_id = "idle"
+        self.mode = "handover"
+        self.policy_id = None
+        self.overrides.clear()
+        self.request_guards = []
+        self._new_request("source_ended")
+        self.goals.clear()
+        self.ended_activity = ended
+        self.handover_until = self.now + activity["handover_timeout"]
+        self.observed_activity = "idle"
+        self._event("activity_ended", activity=ended, handover_until=self.handover_until)
 
     def _start_recovery(self, goal: dict) -> bool:
         budget_key = goal["equipment"] + "." + goal["capability"]
@@ -779,6 +858,7 @@ class Engine:
         self._expected = [e for e in self._expected if e["expires"] >= self.now]
         self._process_commands()
         self._detection()
+        self._activity_end()
         if self.restart_paused and self._continuing_session():
             self.restart_paused = False
             self.started = self.now
@@ -790,7 +870,7 @@ class Engine:
             for cid, cmd in list(self.commands.items()):
                 if cmd["submitted_at"] is None:
                     self._discard_reservation(cid)
-        if self.observer_only or self.restart_paused or self.guard_failed or self.ambiguous or self.mode == "none" or self._detection_due is not None:
+        if self.observer_only or self.restart_paused or self.guard_failed or self.ambiguous or self.mode in {"none", "handover"} or self._detection_due is not None or self._end_due is not None:
             self._refresh_status()
             return []
         self._add_cleanup()
@@ -807,7 +887,7 @@ class Engine:
                 continue
             if self._command_for_goal(goal["key"]):
                 continue
-            if self.mode == "finish" and goal["status"] in _DONE:
+            if self.mode in {"finish", "automatic_idle"} and goal["status"] in _DONE:
                 # Finish is a one-shot explicit shutdown, not a permanent ban on
                 # starting equipment manually after the shutdown has completed.
                 continue
@@ -912,11 +992,13 @@ class Engine:
             self.phase = "recovery_paused"
         elif self.guard_failed or self.ambiguous:
             self.phase = "blocked"
+        elif self.mode == "handover":
+            self.phase = "handover"
         elif self.mode == "none" or self.suspended and self.mode != "policy":
             self.phase = "observing"
         elif any(g["status"] == "blocked" for g in preparation):
             self.phase = "blocked"
-        elif self.mode == "finish":
+        elif self.mode in {"finish", "automatic_idle"}:
             self.phase = "finishing" if self.cleanup_status == "pending" else "blocked" if self.cleanup_status == "blocked" else "ready"
         elif any(g["status"] not in _DONE for g in preparation):
             self.phase = "recovering" if any(g["recovery"] for g in preparation) else "preparing"
@@ -947,6 +1029,7 @@ class Engine:
                 "observed_activity": self.observed_activity, "request_id": self.request_id, "generation": self.generation,
                 "origin": self.origin, "policy_id": self.policy_id, "blockers": deepcopy(blockers), "observer_only": self.observer_only,
                 "mode": self.mode, "suspended": self.suspended,
+                "handover_until": self.handover_until, "ended_activity": self.ended_activity,
                 "policy_ready": self.mode == "policy" and self.phase in {"ready", "applied_unverified"},
                 "events": deepcopy(list(self.events)), "capabilities": [{"equipment": eid, "capability": cid,
                     "value": self._read_cap(eid, cid)[0], "valid": self._read_cap(eid, cid)[1], "feedback_type": cap["feedback_type"]}

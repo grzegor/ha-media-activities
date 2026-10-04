@@ -99,6 +99,8 @@ def _predicate(value: dict, path: str) -> dict:
         _error(path, "minimum exceeds maximum")
     if "max_age" in value:
         _number(value["max_age"], path + ".max_age", positive=True)
+    if "stable_for" in value:
+        _number(value["stable_for"], path + ".stable_for")
     return value
 
 
@@ -331,6 +333,12 @@ def validate_config(config: dict) -> dict:
         activity_ids.add(aid)
         activity.setdefault("name", aid.replace("_", " ").title())
         _requirements(activity.setdefault("requirements", []), caps, p + ".requirements")
+        _predicates(activity.setdefault("end_conditions", []), p + ".end_conditions")
+        if activity.setdefault("end_condition_mode", "all") not in {"all", "any"}:
+            _error(p + ".end_condition_mode", "must be all or any")
+        _predicates(activity.setdefault("end_guards", []), p + ".end_guards")
+        _number(activity.setdefault("end_debounce", 2), p + ".end_debounce")
+        _number(activity.setdefault("handover_timeout", 180), p + ".handover_timeout")
     policies = _list(cfg.setdefault("policies", []), "policies")
     policy_ids = set()
     for i, policy in enumerate(policies):

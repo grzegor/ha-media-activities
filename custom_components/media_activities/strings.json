@@ -170,7 +170,8 @@
           "recovering": "Recovering",
           "finishing": "Finishing",
           "blocked": "Blocked",
-          "recovery_paused": "Recovery paused after restart"
+          "recovery_paused": "Recovery paused after restart",
+          "handover": "Waiting for next activity"
         }
       },
       "observed_activity": {
