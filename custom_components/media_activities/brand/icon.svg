@@ -1,1 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#171c2d"/><rect x="72" y="108" width="368" height="236" rx="32" fill="#a98bff"/><rect x="88" y="124" width="336" height="204" rx="20" fill="#171c2d"/><path d="M224 170L306 226L224 282Z" fill="#f3efff"/><path d="M256 344V390M156 390H356" stroke="#a98bff" stroke-width="14" stroke-linecap="round"/><circle cx="156" cy="390" r="16" fill="#67e8cf"/><circle cx="256" cy="390" r="16" fill="#67e8cf"/><circle cx="356" cy="390" r="16" fill="#67e8cf"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="tile" x1="64" y1="24" x2="448" y2="488" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#242840"/>
+      <stop offset="1" stop-color="#12182a"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="88" y1="104" x2="424" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b69aff"/>
+      <stop offset="1" stop-color="#71c9ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#tile)"/>
+  <rect x="80" y="104" width="352" height="224" rx="30" fill="none" stroke="url(#screen)" stroke-width="20"/>
+  <path d="M231 166c-7-4-15 1-15 9v82c0 8 8 13 15 9l68-41c7-4 7-14 0-18Z" fill="#f8f7ff"/>
+  <path d="M256 338v48m-96 0h192" fill="none" stroke="url(#screen)" stroke-width="16" stroke-linecap="round"/>
+  <g fill="#6ce7cf">
+    <circle cx="160" cy="386" r="18"/>
+    <circle cx="256" cy="386" r="18"/>
+    <circle cx="352" cy="386" r="18"/>
+  </g>
+</svg>

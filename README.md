@@ -1,12 +1,12 @@
 # Media Activities
 
-![Media Activities](custom_components/media_activities/brand/icon.png)
+<img src="custom_components/media_activities/brand/icon.png" alt="Media Activities" width="96" height="96">
 
 Coordinate multimedia activities using equipment already available in Home Assistant. A television by itself is enough. Receivers, projectors, HDMI matrices, smart sockets and IR are optional.
 
 Media Activities prepares the selected activity, checks available device feedback, and reports the step that needs attention. It uses existing HA integrations and ordinary entities, actions and dashboard cards. It adds no device-network drivers, separate application, cloud service or custom frontend.
 
-**Initial target: Home Assistant Core 2026.9.4. Version 0.1.0.** This is a custom integration: test updates against your installation and keep a known-good configuration export.
+**Initial target: Home Assistant Core 2026.9.4. Version 0.1.2.** This is a custom integration: test updates against your installation and keep a known-good configuration export.
 
 ## Install with HACS
 
@@ -25,6 +25,8 @@ After installing, open **Settings → Devices & services → Add integration →
 5. Keep **Observer only** enabled while reviewing generated capabilities and your device observations. Turn it off only when the bindings are ready to actuate.
 
 Release tags use the integration version, for example `v0.1.0`. Keep the system in observer mode when importing a new configuration.
+
+The integration includes its own light/dark and high-resolution brand icons for Home Assistant 2026.3 and later. Manual copies must include the `brand/` directory; it is part of the integration package.
 
 ## Everyday controls
 
