@@ -1002,6 +1002,68 @@ def test_shutdown_guard_waits_for_delayed_fresh_safety_confirmation():
     assert not engine.snapshot()["verified_ready"]
 
 
+def managed_display_config():
+    cfg = supply_config()
+    cfg["equipment"][1]["capabilities"][0]["cleanup"]["guards"] = [
+        {"entity_id": "binary_sensor.cooldown_complete", "state": "on"}]
+    cfg["activities"].append({"id": "audio", "requirements": []})
+    return cfg
+
+
+@pytest.mark.parametrize("mode", ["finish", "audio"])
+def test_normal_managed_cleanup_waits_for_cooldown_and_retains_completed_shutdown(mode):
+    engine = Engine(managed_display_config())
+    observed(engine, value="on")
+    observed(engine, "switch.plug", "on")
+    observed(engine, "binary_sensor.cooldown_complete", "off")
+    if mode == "finish":
+        engine.finish(0)
+    else:
+        engine.request("audio", 0)
+    off, = engine.tick(0)
+    dispatch(engine, off, 0, value="off")
+    assert engine.tick(1) == []
+    observed(engine, "binary_sensor.cooldown_complete", "on", now=30)
+    cut, = engine.tick(30)
+    assert cut["capability_id"] == "supply" and cut["value"] is False
+    dispatch(engine, cut, 30, entity="switch.plug", value="off")
+    observed(engine, value="unavailable", now=31)
+    assert engine.tick(31) == []
+    assert engine.snapshot()["cleanup_status"] == "complete"
+    engine.request("audio", 32)
+    assert engine.tick(32) == []
+    assert engine.snapshot()["cleanup_status"] == "complete"
+    assert not engine._read_cap("tv", "power")[1]
+    # A new wake still needs new device feedback, even after repeated shutdown.
+    engine.request("watch", 33)
+    assert not engine.snapshot()["verified_ready"]
+
+
+def test_outlet_off_alone_or_after_reenergizing_cannot_prove_shutdown():
+    engine = Engine(managed_display_config())
+    observed(engine, value="on")
+    observed(engine, "switch.plug", "off")
+    engine.request("audio", 0)
+    engine.tick(0)
+    assert engine.snapshot()["cleanup_status"] != "complete"
+
+    # Establish a real shutdown and a controlled cut.
+    engine = Engine(managed_display_config())
+    observed(engine, value="off")
+    observed(engine, "switch.plug", "on")
+    observed(engine, "binary_sensor.cooldown_complete", "on")
+    engine.request("audio", 0)
+    cut, = engine.tick(0)
+    dispatch(engine, cut, 0, entity="switch.plug", value="off")
+    engine.tick(1)
+    observed(engine, value="unavailable", now=2)
+    observed(engine, "switch.plug", "on", now=3)
+    observed(engine, "switch.plug", "off", now=4)
+    engine.request("audio", 5)
+    engine.tick(5)
+    assert engine.snapshot()["cleanup_status"] != "complete"
+
+
 def test_disabled_detection_cannot_block_a_shutdown_policy():
     cfg = config()
     cfg["policies"] = [{"id": "sleep", "finish_activity": True, "requirements": [requirement(value=False)]}]

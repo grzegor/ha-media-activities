@@ -6,7 +6,7 @@ Coordinate multimedia activities using equipment already available in Home Assis
 
 Media Activities prepares the selected activity, checks available device feedback, and reports the step that needs attention. It uses existing HA integrations and ordinary entities, actions and dashboard cards. It adds no device-network drivers, separate application, cloud service or custom frontend.
 
-**Initial target: Home Assistant Core 2026.9.4. Version 0.1.2.** This is a custom integration: test updates against your installation and keep a known-good configuration export.
+**Initial target: Home Assistant Core 2026.9.4. Version 0.1.3.** This is a custom integration: test updates against your installation and keep a known-good configuration export.
 
 ## Install with HACS
 

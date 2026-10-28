@@ -96,7 +96,9 @@ A supply is an optional Boolean capability of kind `supply`, with `supply_policy
 
 A supply may list `consumers` by equipment ID. All consumers and their declared shutdown requirements must permit removal. A shared source kept always on prevents the common supply being removed. Low watts or no HDMI is not a substitute for a configured OS-shutdown or cooldown acknowledgement.
 
-Supply loss invalidates cached network readiness. A policy that first confirms shutdown and then intentionally removes supply retains that completed shutdown step; it does not try to contact the now-unpowered device to shut it down again. This historical completion does not establish readiness for a later activity.
+Supply loss invalidates cached device readiness. Normal cleanup and named policies that first confirm shutdown and then intentionally remove supply retain that completed shutdown step; they do not try to contact the now-unpowered device to shut it down again. Repeated shutdown requests can retain this completion while the same supply remains continuously Off. Restoring power or restarting the controller requires fresh device feedback; completion history is never restored from disk.
+
+To include an outlet in everyday shutdown, deliberately set its supply policy to `managed`, add `cleanup: {"value": false}`, list its `consumers`, and configure an Off operation guarded by fresh cooldown/shutdown evidence. Keep the device's logical Off cleanup too. The controller waits for confirmed consumer shutdown before removing power. Video activities must explicitly require supply On before device On. A default `standby_on` outlet is retained during ordinary cleanup.
 
 ## Named policies
 

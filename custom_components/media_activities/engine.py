@@ -277,6 +277,7 @@ class Engine:
                 "started": self.now, "satisfied_at": None, "recovery": False, "ever_done": False, "confirmed_fresh": False}
 
     def _build_goals(self) -> None:
+        previous = self.goals
         self.goals = {}
         if self.mode == "activity" and self.activity_id in self.activities:
             requirements = deepcopy(self.activities[self.activity_id]["requirements"])
@@ -295,6 +296,15 @@ class Engine:
             goal = self._make_goal(req)
             self.goals[goal["key"]] = goal
         self._add_cleanup()
+        # Repeating shutdown while its supply remains deliberately disconnected
+        # must not try to contact the device again. Keep only proven completion,
+        # never infer shutdown from a socket reading or restore it from disk.
+        for goal in self.goals.values():
+            old = next((g for g in previous.values() if g["equipment"] == goal["equipment"]
+                        and g["capability"] == goal["capability"] and _equal(g["value"], goal["value"])), None)
+            if old and self._shutdown_completed_before_supply_cut(old):
+                for field in ("status", "reason", "satisfied_at", "ever_done", "confirmed_fresh", "disconnected_supply"):
+                    goal[field] = old[field]
         for goal in self.goals.values():
             for command in self.commands.values():
                 if command["submitted_at"] is not None and command["equipment_id"] == goal["equipment"] and command["capability_id"] == goal["capability"] and _equal(command["value"], goal["value"]):
@@ -364,6 +374,16 @@ class Engine:
                 continue
             value, valid, _ = self._read_cap(eid, cid)
             if valid and value is False:
+                # Capture proof before readiness is invalidated. A later outlet
+                # On/Off cycle has a different changed_at and cannot reuse it.
+                supply_goal = next((g for g in self.goals.values() if g["equipment"] == eid
+                                    and g["capability"] == cid and g["value"] is False), None)
+                if supply_goal and (old is None or not _equal(old["state"], state)):
+                    for goal in self.goals.values():
+                        if goal["equipment"] in cap["consumers"] and goal["status"] == "confirmed" and goal["confirmed_fresh"]:
+                            current, current_valid, _ = self._read_cap(goal["equipment"], goal["capability"])
+                            if current_valid and _equal(current, goal["value"]):
+                                goal["disconnected_supply"] = (eid, cid, self.now)
                 for consumer in cap["consumers"]:
                     self.invalidated_at[consumer] = self.now
         # Integrations can retain a known source attribute while the entity is
@@ -832,9 +852,9 @@ class Engine:
         """Retain a completed shutdown step after its intentional de-energizing.
 
         Network readiness is still invalidated; this records historical completion
-        of this policy's shutdown step, never a new assertion about device feedback.
+        of a shutdown step, never a new assertion about device feedback.
         """
-        if self.mode != "policy" or goal["status"] != "confirmed" or not goal["confirmed_fresh"]:
+        if goal["status"] != "confirmed" or not goal["confirmed_fresh"]:
             return False
         cap = self.caps[(goal["equipment"], goal["capability"])]
         shutdown = cap["kind"] == "power" and goal["value"] is False or (
@@ -849,7 +869,9 @@ class Engine:
                 continue
             value, valid, _ = self._read_cap(eid, cid)
             supply_observation = self.observations.get(supply.get("observation", {}).get("entity_id"), {})
-            if valid and value is False and supply_observation.get("fresh") and supply_observation.get("at", -1) >= goal["satisfied_at"]:
+            if (valid and value is False and supply_observation.get("fresh")
+                    and goal.get("disconnected_supply") == (eid, cid, supply_observation["changed_at"])
+                    and supply_observation.get("at", -1) >= goal["satisfied_at"]):
                 return True
         return False
 
